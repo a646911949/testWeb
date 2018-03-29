@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<script src="http://www.jq22.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="js/jquery.webcam.js"></script>
+</head>
+<body>
+	<button class="play">拍照</button>
+	<div id="webcam"></div>
+</body>
+<script>
+	var w = 320, h = 240; 
+//	var w = 600, h = 800; 
+	var pos = 0, ctx = null, saveCB, image = [];
+	var canvas = document.createElement("canvas");
+	$("body").append(canvas);
+	canvas.setAttribute('width', w);
+	canvas.setAttribute('height', h);
+	ctx = canvas.getContext("2d");
+	image = ctx.getImageData(0, 0, w, h);
+	canvas.style.display="none";//隐藏canvas
+	
+	$("#webcam").webcam({
+		width : w,
+		height : h,
+		mode : "callback", 
+		swffile : "download/jscam_canvas_only.swf",
+		onTick : function(remain) {
+		},
+		onSave : function(data) { 
+			var col = data.split(";");
+			var img = image;
+			for (var i = 0; i < w; i++) {
+				var tmp = parseInt(col[i]);
+				img.data[pos + 0] = (tmp >> 16) & 0xff;
+				img.data[pos + 1] = (tmp >> 8) & 0xff;
+				img.data[pos + 2] = tmp & 0xff;
+				img.data[pos + 3] = 0xff;
+				pos += 4;
+			}
+			if (pos >= 4 * w * h) {
+				ctx.putImageData(img, 0, 0); 
+				pos = 0;
+				//alert(canvas.toDataURL());
+				$.ajax({
+			        url:"./servlet.action",
+			        data: {"img":canvas.toDataURL()},
+			        type:"POST",
+			        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+			        success:function(data){
+			           alert(data);
+			        },
+			        error:function(data){
+			          //  alert(data);
+			        }
+			    });
+			}
+		},
+		onCapture : function() {
+			webcam.save();
+		},
+		debug : function() {
+		},
+		onLoad : function() {
+		}
+	});
+
+	$(".play").click(function() {
+		webcam.capture(); 
+		//webcam.save();
+	});
+</script>
+</html>
