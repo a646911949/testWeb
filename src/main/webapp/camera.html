@@ -6,9 +6,18 @@
 <script src="http://www.jq22.com/jquery/1.11.1/jquery.min.js"></script>
 <script src="js/jquery.webcam.js"></script>
 </head>
+<style>
+.a {
+	transform: rotate(90deg);
+	-ms-transform: rotate(90deg); /* IE 9 */
+	-webkit-transform: rotate(90deg); /* Safari and Chrome */
+}
+</style>
 <body>
 	<button class="play">拍照</button>
-	<div id="webcam"></div>
+	<div id="webcam" class="a"></div>
+	
+	
 </body>
 <script>
 	var w = 320, h = 240; 
